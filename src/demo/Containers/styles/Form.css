@@ -1,0 +1,53 @@
+
+.form {
+  margin: 30px
+}
+
+.formRow {
+  margin: 2px 15px 30px 0px;
+  width: 420px;
+}
+
+.mainMessage {
+  background-color: #FFCCCC;
+  padding: 10px 15px;
+}
+
+input {
+  display: block;
+  height: 30px;
+  width: 100%;
+}
+
+label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.errorLabel {
+  color: red;
+}
+
+.checkbox {
+  display: inline-block;
+  width:15px;
+  height: 15px;
+  margin-left:10px;
+}
+
+.checkboxLabel {
+  display: inline-block;
+}
+
+button {
+  background-color: red;
+  color: white;
+  font-size: 18px;
+  width: 320px;
+  height: 48px;
+}
+
+button.disable {
+  background-color: grey;
+  cursor: not-allowed;
+}
