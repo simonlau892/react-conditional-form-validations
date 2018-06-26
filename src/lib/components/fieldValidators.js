@@ -114,6 +114,14 @@ function isDateMonthYear (value) {
   }
 }
 
+function isAddress (value) {
+  const isValid = /^[ a-zA-Z0-9-'/.,#&]*$/.test(value)
+  if (isValid) {
+    return null
+  }
+  return ErrorMessages.isAddress
+}
+
 export default {
   required,
   isInRange,
@@ -122,5 +130,6 @@ export default {
   isNumberNoSymbol,
   valueUndefined,
   isDate,
-  isDateMonthYear
+  isDateMonthYear,
+  isAddress
 }

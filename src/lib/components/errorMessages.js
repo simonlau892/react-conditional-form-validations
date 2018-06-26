@@ -46,3 +46,7 @@ export const checkAUSPostcode = (fieldName, messages) => {
 export const minNotEmpty = (fieldName, messages) => {
   return messages[fieldName].minNotEmpty || messages[fieldName].default
 }
+
+export const isAddress = (fieldName, messages) => {
+  return messages[fieldName].isAddress || messages[fieldName].default
+}

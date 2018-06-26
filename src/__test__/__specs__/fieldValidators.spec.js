@@ -11,7 +11,8 @@ const {
   isNumber,
   isNumberNoSymbol,
   isDate,
-  isDateMonthYear} = fieldValidators
+  isDateMonthYear,
+  isAddress} = fieldValidators
 
 const name = 'testname'
 
@@ -25,7 +26,7 @@ const message = {
     valueUndefined: `valueUndefined not met`,
     isDate: `isDate not met`,
     isDateMonthYear: `isDateMonthYear not met`,
-    isQantasAddress: `isQantasAddress not met`
+    isAddress: `isAddress not met`
   }
 }
 
@@ -248,6 +249,20 @@ describe('The field validator', () => {
       const error = result(name, {'testname': {default: 'Enter a valid response'}})
       const errorMsg = 'Enter a valid response'
       expect(error).toEqual(errorMsg)
+    })
+  })
+  describe('isAddress function should', () => {
+    test('returns null if value matches the QantasAddress regex. [1.8.0]', () => {
+      const value = 'a-z A-Z0-9-\'/.,#&'
+      const result = isAddress(value)
+      expect(result).toEqual(null)
+    })
+    test('returns correct error message if value does not match the email regex. [1.8.1]', () => {
+      const value = '*%$@'
+      const result = isAddress(value)
+      const error = result(name, message)
+      const errorMessage = 'isAddress not met'
+      expect(error).toEqual(errorMessage)
     })
   })
 })
