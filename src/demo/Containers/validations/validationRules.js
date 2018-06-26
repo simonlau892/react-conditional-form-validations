@@ -31,7 +31,7 @@ const rules = [
     runConditions: [
       {attr: {id: 'addressCheckbox', checked: true, type: 'checkbox'}}
     ],
-    formMessage: 'minimumFilled',
+    formMessage: 'false',
     fieldMessage: 'false'
   }
 ]

@@ -1,7 +1,6 @@
 // theirs
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import formValidators from './formValidators'
 
 export default function ValidateForm (messages, validation) {
   return (ValidationComponent) => class ValidateForm extends Component {
@@ -12,7 +11,7 @@ export default function ValidateForm (messages, validation) {
       onSubmitError: PropTypes.func,
       serverError: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
     }
-
+    
     constructor (props) {
       super(props)
       this.state = {
@@ -66,17 +65,26 @@ export default function ValidateForm (messages, validation) {
       this.setState({dynamicVal: val})
     }
 
-    // ==================================================
+    // retrieve all the attributes of all input element on form
+    retrieveFormData = () => {
+      let formData = []
+      const formInputs = document.querySelectorAll('input')
+      Array.prototype.forEach.call(formInputs, (field) => {
+        const {name, value, id, checked, type} = field
+        formData.push({ name, value, id, checked, type })
+      })
+      return formData
+    }
 
-    // Used to validate individual fields
-    validateFields (name, value) {
+    // validate a field rule
+    validateFieldRule (name, value) {
       const fieldValidations = this.state.dynamicVal || validation
-      const findField = fieldValidations.find((item) => {
+      const rule = fieldValidations.find((item) => {
         return item.name === String(name) && item.type === 'field'
       })
 
-      if (findField) {
-        let rulesArray = findField['rule']
+      if (rule) {
+        let rulesArray = rule['rule']
         let errorObj = {}
         for (let rule of rulesArray) {
           let errorMessageFunc = rule(value)
@@ -86,8 +94,7 @@ export default function ValidateForm (messages, validation) {
           }
         }
 
-        if (findField['formMessage'] !== 'false' || findField['formMessage'] === undefined) {
-          // const updateFormState = {...this._formErrors, ...errorObj}
+        if (rule['formMessage'] !== 'false' || rule['formMessage'] === undefined) {
           this.setfieldErrors(errorObj)
           this.setformErrors(errorObj)
         } else {
@@ -96,53 +103,115 @@ export default function ValidateForm (messages, validation) {
       }
     }
 
-    // Used to validate a group of fields
-    validateForm () {
-      let formData = []
-      // Retrieve all inputs from form
-      const formInputs = document.querySelectorAll('input')
+    // validate a form rule
+    validateFormRule (rule, formData) {
+      let isConditionsMet
+      if (rule['runConditions']) {
+        isConditionsMet = this.validateRunConditions(rule['runConditions'], formData)
+      } else {
+        // If 'runCondtions' key is not present then run the validation rule
+        isConditionsMet = true
+      }
 
-      Array.prototype.forEach.call(formInputs, (field) => {
-        const {name, value, id, checked, type} = field
-        formData.push({ name, value, id, checked, type })
-      })
+      if (isConditionsMet) {
+        let result = rule['rule'](rule.fields, formData)
+        if (result) {
+          let errorObj
+          if(rule['formMessage'] && rule['formMessage'] === 'false') {
+            errorObj = result['fields'].reduce((acc, name) => {
+              acc['field'][`${name}Error`] = result['validator'](name, messages)
+              return acc
+            }, {field: {}})
+          }
 
-      // Run through validation
-      if (this.state.dynamicVal || validation) {
-        const formValidations = this.state.dynamicVal || validation
+          if(rule['formMessage'] && rule['formMessage'] !== 'false') {
+            let formMessage = rule['formMessage']
+            errorObj = result['fields'].reduce((acc, name) => {
+              acc['field'][`${name}Error`] = result['validator'](name, messages)
+              acc['form'][`${formMessage}`] = result['validator'](formMessage, messages)
+              return acc
+            }, {field: {}, form: {}})
+          }
 
-        for (let item of formValidations) {
-          if (item['type'] === 'field') {
-            let fieldValue = formData.find((element) => element.name === String(item.name))
-            if (fieldValue) {
-              const {value} = fieldValue
-              this.validateFields(item.name, value)
-            }
-          } else {
-            let isConditionsMet
-            // check the run conditions to see whether to run the valiation rule or not
-            if (item['runConditions'] && item['runMethod']) {
-              isConditionsMet = formValidators.checkValidationCondtion(item['runConditions'], item['runMethod'], formData)
+          if(rule['formMessage'] && rule['fieldMessage'] === 'false' && rule['formMessage'] !== 'false') {
+            let formMessage = rule['formMessage']
+              errorObj = {field: {}, form: {[formMessage]: result['validator'](formMessage, messages)}}
+          }
+
+          if(rule['formMessage'] === undefined) {
+            errorObj = result['fields'].reduce((acc, name) => {
+              acc['field'][`${name}Error`] = result['validator'](name, messages)
+              acc['form'][`${name}Error`] = result['validator'](name, messages)
+              return acc
+            }, {field: {}, form: {}})
+          }
+
+          this.setfieldErrors(errorObj.field)
+          this.setformErrors(errorObj.form)
+        }
+      }
+    }
+
+    // validate run conditions
+    validateRunConditions = (runConditions, formData) => {
+      let allConditionResults = runConditions.map((condition, index) => {
+        let attributes = condition['attr']
+        // Match the run condition to the input state in formData
+        let firstKey = Object.keys(attributes)[0]
+        const matchedData = formData.find((inputState) => String(inputState[firstKey]) === String(attributes[firstKey]))
+        if (matchedData) {
+          const oneConditionResult = Object.keys(attributes).map((item) => {
+            // check if condition item has an array of values
+            if (Object.prototype.toString.call(attributes[item]) === '[object Array]') {
+              // check is runPolarity exists and whether it should be reversed
+              if (condition['runPolarity'] && condition['runPolarity'][item] === -1) {
+                return attributes[item].every((elem) => elem !== matchedData[item])
+              } else {
+                // run default check
+                return attributes[item].some((elem) => elem === matchedData[item])
+              }
             } else {
-              // If 'runCondtions' key is not present then run the validation rule
-              isConditionsMet = true
-            }
-
-            if (isConditionsMet) {
-              let formMessage = item['formMessage'] || null
-              let ErrorMessageObj = item['rule'](item.fields, formData, formMessage, messages)
-              if (ErrorMessageObj) {
-                const {field, form} = ErrorMessageObj
-                this.setfieldErrors(field)
-                this.setformErrors(form)
+              if (condition['runPolarity'] && condition['runPolarity'][item] === -1) {
+                return attributes[item] !== matchedData[item]
+              } else {
+                // run defualt check
+                return attributes[item] === matchedData[item]
               }
             }
+          })
+          const isConditionMet = oneConditionResult.filter((item) => (item === false)).length <= 0
+          return isConditionMet
+        } else {
+          return false
+        }
+      })
+      const areAllConditionsMet = allConditionResults.filter((item) => (item === false)).length <= 0
+      return areAllConditionsMet
+    }
+
+    // validate all rules
+    validateRules () {
+      // Retrieve all input data from form
+      const formData = this.retrieveFormData()
+      // Get validation rules
+      const validationsRules = this.state.dynamicVal || validation || null
+      // Run each rule
+      if (validationsRules) {
+        for (let rule of validationsRules) {
+          if (rule['type'] === 'field') {
+            let isFieldValid = formData.find((item) => item.name === String(rule.name))
+            if (isFieldValid) {
+              this.validateFieldRule(rule.name, isFieldValid.value)
+            }
+          }
+          if (rule['type'] === 'form') {
+            this.validateFormRule (rule, formData)
           }
         }
       }
     }
 
-    change = (event, name, reset, fieldNames = null, ...other) => {
+    change = (event, name, reset = false, fieldNames = null, ...other) => {
       if (reset) {
         if (fieldNames) {
           const removeErrors = fieldNames.reduce((acc, item) => {
@@ -169,7 +238,7 @@ export default function ValidateForm (messages, validation) {
 
     blur = (event, name, ...other) => {
       const { value } = event.target || event
-      this.validateFields(name, value)
+      this.validateFieldRule(name, value)
       const isFieldError = this.areThereErrors(this._fieldErrors)
       this.setState({
         fieldErrors: this._fieldErrors,
@@ -181,7 +250,7 @@ export default function ValidateForm (messages, validation) {
 
     submit = (...other) => {
       this.resetErrors()
-      this.validateForm()
+      this.validateRules()
       const formArray = Object.keys(this._formErrors).reduce((acc, key) => {
         if (this._formErrors[key] !== null) {
           acc.push(this._formErrors[key])
