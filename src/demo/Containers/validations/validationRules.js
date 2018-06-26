@@ -24,6 +24,15 @@ const rules = [
       {attr: {id: 'addressCheckbox', checked: true, type: 'checkbox'}},
       {attr: {name: 'country', value: ['AU', 'NZ', 'US', 'CA']}, runPolarity: {value: -1}}
     ],
+  },
+  { type: 'form',
+    rule: formValidators.minNotEmpty(3),
+    fields: ['address1', 'address2', 'city', 'country', 'postcode'],
+    runConditions: [
+      {attr: {id: 'addressCheckbox', checked: true, type: 'checkbox'}}
+    ],
+    formMessage: 'minimumFilled',
+    fieldMessage: 'false'
   }
 ]
 

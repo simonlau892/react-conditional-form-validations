@@ -2,82 +2,85 @@ import * as ErrorMessages from './errorMessages'
 
 // Helper Function =============================================================================================================================================
 
-// check if a input is empty from the data object
-const isEmpty = (name, formData) => {
-  const data = formData.find((item) => String(item.name) === String(name))
-  if (data) {
-    return String(data.value).length > 0 ? 'true' : 'false'
+const isEmpty = (value) => {
+  if (value && String(value).length > 0) {
+    return 'true'
   } else {
     return 'false'
   }
+}
+
+const createObjMap = (nameArray, formData) => {
+  return nameArray.reduce((acc, name, index) => {
+    let data = formData.find((item) => String(item.name) === String(name))
+    if (data && data.value) {
+      if (isEmpty(data.value) === 'false') {
+        acc['emptyFields'].push(name)
+      } else {
+        acc['fields'][name] = data.value
+      }
+    } else {
+      acc['emptyFields'].push(name)
+    }
+    return acc
+  }, {fields: {}, emptyFields: []})
+}
+
+const sameValueArray = (array) => {
+  return !!array.reduce((a, b) => (a === b) ? a : NaN)
+}
+
+const sameValueObject = (object) => {
+  let firstValue = object[Object.keys(object)[0]]
+  return Object.keys(object).every((item) => object[item] === firstValue)
 }
 
 // VALIDATORS =============================================================================================================================================
 // TODO - Refactor each validator to make it less complicated and easier to read
 
 // Check if multiple form values have the same validity (i.e either all are empty or all are present).
-const sameValidity = (fieldNames, formData) => {
-  let fieldNameWithErrors = fieldNames.map((name) => {
-    let checker = isEmpty(name, formData)
-    if (checker === 'false') {
-      return name
-    }
-    return null
-  }).filter((item) => item != null)
+const sameValidity = (fieldNames, formData, formMessage, messages) => {
+  const map = createObjMap(fieldNames, formData)
 
-  const result = !!fieldNames.map((name) =>
-    isEmpty(name, formData)
-  ).reduce((firstValue, nextValue) => {
-    return (firstValue === nextValue) ? firstValue : NaN
-  })
-
-  if (result) {
-    return null
-  } else {
+  if (map['emptyFields'].length > 0 && map['emptyFields'].length !== fieldNames.length) {
     return {
-      fields: fieldNameWithErrors,
+      fields: map['emptyFields'],
       validator: ErrorMessages.sameValidity
     }
+  } else {
+    return null
   }
 }
 
 // Check if all values are the same.
-const sameValue = (fieldNames, formData) => {
-  const result = !!fieldNames.reduce((first, next) => {
-    let firstValue = formData.find((item) => String(item.name) === String(first))
-    let nextValue = formData.find((item) => String(item.name) === String(next))
-
-    return (firstValue.value === nextValue.value) ? true : NaN
-  })
-
-  if (result) {
-    return null
-  } else {
-    return {
-      fields: fieldNames,
-      validator: ErrorMessages.sameValue
+const sameValue = (fieldNames, formData, formMessage, messages) => {
+  const map = createObjMap(fieldNames, formData)
+  if (map['emptyFields'].length === fieldNames.length) {
+    if (sameValueArray(map['emptyFields'])) {
+      return null
+    } else {
+      return {fields: fieldNames, validator: ErrorMessages.sameValue}
     }
+  } else if (Object.keys(map['fields']).length === fieldNames.length) {
+    if (sameValueObject(map['fields'])) {
+      return null
+    } else {
+      return {fields: fieldNames, validator: ErrorMessages.sameValue}
+    }
+  } else {
+    return {fields: fieldNames, validator: ErrorMessages.sameValue}
   }
 }
 
 // Check if all form values are not empty.
-const notEmpty = (fieldNames, formData) => {
-    let fieldWithErrors = fieldNames.map((name, indx) => {
-      let checker = isEmpty(name, formData)
-      if (checker === 'false') {
-        return name
-      }
-      return null
-    }).filter((item) => item != null)
-
-    if (fieldWithErrors.length > 0) {
-      return {
-        fields: fieldWithErrors,
-        validator: ErrorMessages.notEmpty
-      }
-    } else {
-      return null
-    }
+// Message is displayed on all affected input fields
+const notEmpty = (fieldNames, formData, formMessage, messages) => {
+  const map = createObjMap(fieldNames, formData)
+  if (map['emptyFields'].length > 0) {
+    return {fields: fieldNames, validator: ErrorMessages.notEmpty}
+  } else {
+    return null
+  }
 }
 
 
@@ -125,24 +128,16 @@ const checkAUSPostcode = (fieldNames, formData) => {
 }
 
 // At least three fields are present. Use to check at least three security questions are present.
-// Error is presented in form message.
 const minNotEmpty = (minValue) => {
-  return (fieldNames, formData) => {
-    let fieldWithErrors = fieldNames.map((name, indx) => {
-      let checker = isEmpty(name, formData)
-      if (checker === 'false') {
-        return name
-      }
+  return (fieldNames, formData, formMessage, messages) => {
+    const map = createObjMap(fieldNames, formData)
+    if (Object.keys(map['fields']).length >= minValue) {
       return null
-    }).filter((item) => item != null)
-
-    if (fieldWithErrors.length > minValue) {
-      return {
-        fields: fieldWithErrors,
-        validator: ErrorMessages.minNotEmpty
-      }
     } else {
-      return null
+      return {
+          fields: map['emptyFields'],
+          validator: ErrorMessages.minNotEmpty
+      }
     }
   }
 }
