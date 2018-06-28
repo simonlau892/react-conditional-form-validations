@@ -1,4 +1,9 @@
 export default {
+  email: {
+    default: 'Enter a valid field',
+    required: 'The email is a required field',
+    isEmail: `The email does not look correct`
+  },
   address1: {
     default: 'Enter a valid field',
     notEmpty: 'Address line 1 is a required field',
@@ -26,14 +31,6 @@ export default {
     isNumber: `The postcode should be a number`,
     isInRange: `The postcode should be between 1 to 8`,
     notEmpty: 'The postcode is a required field',
-    minNotEmpty: `Minimum number of inputs to be filled`
-  },
-  email: {
-    default: 'Enter a valid field',
-    required: 'The email is a required field',
-    isEmail: `The email does not look correct`
-  },
-  minimumFilled :{
     minNotEmpty: `Minimum number of inputs to be filled`
   }
 }

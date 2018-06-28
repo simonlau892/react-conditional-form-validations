@@ -1,103 +1,75 @@
 
-# React Form Validation HOC
 
-This library provides validation functionalities for React forms. It is a Higher Order Component (HOC) thats wraps a form component.
+
+# React Conditional Form Validation
+
+This library is design to be used in applications where conditional form validation is required. In particular, validation can be executed according the the current input values of the form. It is a Higher Order Component (HOC) thats wraps a React form component.
 
 **What can this library do**.
-* Supports basic input field validation as well as complex form validations involving multiple input fields. Form validations can be customised to run only in certain scenarios.
-* Has built in input field and form validators that are commonly used for validating personal details. More validators can be added on request.  
-* Returns validation errors as props. Errors can either be displayed per input field or in conjunction with a main message. The error texts are set by the developer.
-* Various state information are available, including whether any inputs have being touched or when the submit button has been clicked.
+* Supports basic input *field validation* as well as complex *form validations* involving multiple input fields.
+* Has built in input field and form validators that are commonly used for validating personal details. Additional validators can be added on request.  
+* Returns validation errors as props. Errors can either be displayed per input field, as a message summary or a combination of both. The error text is set by the developer.
 * Can optionally accept external form error messages from the server.
 * Can clear error(s) from one or more input fields as the user types.
 * Accepts a number of callback functions that enable developers to execute additional actions at each validation stage.
-* Supports dynamic validation. If the structure of the form is only known at run time, the library can accept validation rules dynamically.
+* Various state information are available, including whether any inputs have being touched or when the submit button has been clicked.
+* Supports *dynamic validation*. If the structure of the form is only known at run time, the library can accept validation rules dynamically.
 
 ## Content
-1.  [How to install](#install)
-2.  [How to use](#use)
-3.  [Basic Setup](#setup)
+1.  [How it works](#works)
+2.  [How to install](#install)
+3.  [Demo](#demo)
 4.  [Validators](#validators)
-5. [Validation Rules](#validation-rules)
-6. [Error Messages](#messages)
-7. [Output Props](#OutputProps)
-8. [Input Props](#InputProps)
-9. [API](#API)  
-10. [Notes](#notes)
+5.  [Validation Rules](#validation-rules)
+6.  [Error Messages](#messages)
+7.  [Output Props](#OutputProps)
+8.  [Input Props](#InputProps)
+9.  [API](#API)
+10. [Testing](#test)  
+11. [Notes](#notes)
+
+##  <a id="works"></a>How it works
+This library support two types of validations, *field validation* and *form validation*.
+
+Field validation involves validating a single input field. This type of validation is executed when the  onBlur event occurs. All field validations are also re-run when the submit button is clicked.
+
+Form validation involves validating a multiple input fields at a time. These validations can be programmed to run according to the current input values of the form. This types of validation is executed when the submit button is clicked.
+
+The errors from both form and field validations can be cleared when the onChange event is activated.   
+
 
 ##  <a id="install"></a>How to install
 
 #### to be determined....
 
-##  <a id="use"></a>How to use
-1. Pass  the input's onChange, the input's onBlur and the button's onClick callbacks to the form component. See [input props](#InputProps).
-2. Create validation rules file. See [validation rules](#validation-rules).
-3. Create error message file. See [error message](#messages).
-4. Import library, validation rules file and message file into form component.
-5. For each input element that needs validation, call the library's corresponding API functions for each  DOM event. See [API](#API).  For example:
-`<input name={'email'} onBlur={(e) => props.blur(e, e.target.name)} onChange={(e) => props.change(e, e.target.name, true, null)} />`
-6. Connect the submit button onClick event to the library's submit function. See [API](#API).  For example:
-`<Button onClick={(e) => props.submit(e)} />`
-7. Return the form component wrapped inside the library. The rules and error messages are passed as parameters. For example:
-`export default validationWrapper(errorMessages, rules)(Form)`
+##  <a id="demo"></a>Demo
+To see a demo either:
 
-
-##  <a id="setup"></a>Basic Setup
-
-### Form architecture (Recommended)
-The library is agnostic to the form's architecture. Nevertheless the following is a suggested pattern when using this library.
-
-```
-project  
-│
-└───form1
-│     │ - parent.js
-│     | - view.js
-│     |── validation
-│       │ - rules.js
-│       │ - messages.js             
-│   
-└───form2
-     │ - parent.js
-     | - view.js
-     |── validation
-       │ - rules.js
-       │ - messages.js
-
-```
-
- **Parent.js**:
- This file renders view.js. This file should contain the input's onChange and onBlur callbacks as well as the button's onClick callback. The library will run these callbacks once it has completed its validation work for each of these events. These callbacks are passes as props to view.js.  
-
-  **view.js**:
- This file renders the form. It imports the validation library, the rules file and the messages file. It return the form as a wrapped HOC with the rules and messages passed as parameters.
-
-  **rules.js**:
- This file contains the form's validation rules. Refer to [validation rules](#validation-rules) to see how the rules are created.
-
-  **messages.js**:
- This file contains the validation messages. Refer to [Error Messages](#messages) to see how the message are created.
+- Clone the repo. Then `npm install`, and then `npm start`. See demo App in `src/demo`.
+- Alternatively click the following link for a sandbox version:
+https://codesandbox.io/embed/o7qn50x3zz
 
 ## <a id="validators"></a>Validators
 The following is a list of available field and form validators. More can be added on request.
 
 ### Field Validators
 
-1. **required -**  Check if the value has a truthy value or not. It will return an error if value is either null, undefined, NaN, empty string, 0 or false.
+1. **required -**  Check if the value has a value or not. It will return an error if value is either null, undefined, or is an empty string.
 2. **isInRange(min, max) -** Check to see if the value is between the min and max parameter.
 3. **isEmail -**  Check if the value has a pattern of a standard email address.
 4. **isNumber -**  Check if the value is a number. Note this also accepts '+' and '-'.
 5. **isNumberNoSymbol -**  Check if the value is a number and does not accept '+' or '-'.
 6. **isDate -**  Check if a date string in the dd/mm/yyyy format is a valid date and does not exceed today's date.
 7. **isDateMonthYear -**  Check if a date string in the mm/yyyy format is a valid date and does not exceed the current month.
+8. **isAddress -**  Check if a value fits a typical address value. Accepts letters, numbers and the following symbols `-'/.,#&`.
 
 ### Form Validators
 
-1. **notEmpty -**  Check if all given values are not empty. If one more values are empty then it return an error.
-2. **sameValue -** Check if all values are the same 'Sting' value.
+1. **notEmpty -**  Check if all given values are not empty. If one or more values are empty then it return an error.
+2. **sameValue -** Check if all values are the same 'String' value.
 3. **sameValidity -** Check if all values have the same validity (i.e either all are empty or all are present).
 4. **minNotEmpty(minNumber) -** Check to see if at least a minimum number of values are not empty. The minNumber parameter sets the minimum value.
-5. **checkAUSPostcode -** Check to see if the postcode value is valid according to the given state. Can only be used for Australian's addresses. Note: This validator expects the `fields` property in the validation rules to be in the following format [country, postcode, state]. See the next section for more details.
+5. **checkAUSPostcode -** Check to see if the postcode value is valid according to the given state. Can only be used for Australian's addresses. Note: This validator expects the `fields` property in the form rules to be in the following format [country, postcode, state]. See the [Validation Rules](#validation-rules) for more details.
 
 
 ## <a id="validation-rules"></a>Validation Rules
@@ -107,7 +79,7 @@ The library accepts validation rules as an array of objects. Each object consist
 A field rule has the following structure:
 
 **type [string]:** A string equal to `field`.  
-**name [string]:** The name of the input field to be validated.  
+**name [string]:** The name of the input field (name attribute) to be validated.  
 **rule [Array]** An array off field validator functions. Rules are processed from left to right. The library stop processing when a validator is not meet.
 
 Example:
@@ -128,44 +100,29 @@ A form rule has the following structure:
 **type [string]:** A string equal to `form`.  
 **rule [function]:**  The name of the form validator function.  
 **fields [Array]:** An array of input field names that are part of the form validation.  
-**runConditions [Array]** *optional* **:** An array of objects, with each object detailing a state of an input element. The form validation is only executed if all states are met. The state of an input is defined by its attribute values. Attributes supported are name, value, id, checked and type. More attributes can be added on request. An attribute value can either be a single value or an array of values. If runConditions is omitted, then the validation will run every time.  
-**runMethod [Array]** *optional* **:** If an attribute value in the runCondition is an array, then there is an option to reverse the polarity of the check. The length of runMethod should match the length of runConditions. `1` is set if the polarity is to remain, `-1` if the polarity should be reverse. `0` is given if the state has no array values. If you wish to change the polarity of a single value, then create a one element array.  
-**formMessage[string]** *optional* **:** Is an identifier to set a custom form message. This identifier is used in the message object. If this is omitted the form message is the list of errors messages from fields that are affected by the validation. If formMessage is set to `false` then no form message will be displayed.
+**runConditions [Array]** *optional* **:** An array of objects, with each object representing a condition that needs to be met before the validation is executed. Each condition consists of an `attr` property. The `attr` property is an object that details the attributes values of one input element. Attribute tags that are currently supported are `name`, `value`, `id`, `checked` and `type`. More attributes can be added on request. An attribute value can either be a single value or an array of values.
+In addition to the attributes, there is an option to add a `runPolarity` object for each condition. `runPolarity` is an object that can reverse the polarity of the check for each attribute value. See [Demo](#demo).
+If runConditions is omitted, then the validation rule will run every time.
+**formMessage[string]** *optional* **:** Is an identifier to set a custom form message. This identifier is used in the message object. If this is omitted then the form message is the list of errors messages for each input field that are affected by this validation rule. If formMessage is set to `false` then no form message will be displayed for this validation rule.
+**fieldMessage[string]** *optional* **:** If fieldMessage is set to `false` then no field message will be displayed for each input for this validation rule.
 
 Example:  
-The following is the form validations for an address form. The address form contains five fields with the following names 'country', 'address', 'suburb', 'state', 'postcode'. The address fields needs to be validated if the user 'checks' the *post to address* checkbox. If it is checked then all values except the postcode needs to be filled. This validation check is represented in the first object of the array. If the country is either Australia, New Zealand, US or Canada then the postcode needs to be filled in too. This validation check is represented in the second object of the array.
-
-The validation rule `notEmpty` is used in both cases. The run condition in both cases first check if the checkbox with id equal to 'postToAddress' has been checked. If this is pass then in the first case the library checks if the input with name 'country' is **not** equal to either Australia, New Zealand, US or Canada. In the second case it check if it does equal to these countries. The polarity is reverse in the first case because the run method is set to `-1`.
-
-The second case, has a custom form message set, so a unique message  is displayed. This message is set in the message object (see next section). The form message of the first case will display the error message of each of the the affected input fields.
-
 ~~~~
 validations =
 [
   { type: 'form',
-    'rule': notEmpty,
-    'fields': ['country', 'address', 'suburb', 'state'],
-    'runConditions': [
-    {id: 'postToAddress', checked: true, type: 'checkbox'},
-    {name: 'country', value: ['AU', 'NZ', 'US', 'CA']}
+    rule: formValidators.notEmpty,
+    fields: ['address1', 'city', 'country', 'postcode'],
+    runConditions: [
+      {attr: {id: 'addressCheckbox', checked: true, type: 'checkbox'}},
+      {attr: {name: 'country', value: ['AU', 'NZ', 'US', 'CA']}, runPolarity: {value: -1}}
     ],
-    runMethod: [0, -1]
   },
-  { type: 'form',
-    'rule': notEmpty,
-    'fields': ['country', 'address', 'suburb', 'state', 'postcode'],
-    'runConditions': [
-    {id: 'postToAddress', checked: true, type: 'checkbox'},
-    {name: 'country', value: ['AU', 'NZ', 'US', 'CA']}
-    ],
-    runMethod: [0, 1]
-    formMessage: 'postcodeMessage'
-  }
  ]
 ~~~~
 
 ## <a id="messages"></a> Error Messages
-The library accepts a message object. Each input name has a set of error messages corresponding to the rule type. If the rule type is not found then it will display the default message.  The following is an example of a message object for the validation rules given in the previous section. 'postcodeMessage' is a custom message as explained in the previous section.
+The library accepts a message object. Each input name has a set of error messages corresponding to the rule type. If the rule type is not found then it will display the default message. The following is an example of a message object. See [Demo](#demo) to see how the message object relates
 
 ~~~~
 messages = {
@@ -178,19 +135,10 @@ messages = {
     notEmpty: 'Enter a street address',
     isInRange: 'Your address must be less than 50 characters'
   },
-  'suburb': {
-    default: 'Enter a valid field',
-    notEmpty: 'Enter a suburb/town/city',
-    isInRange: 'Your suburb/town/city must be less than 50 characters'
-  },
-  'state': {
-    default: 'Enter a valid field',
-    notEmpty: 'Enter a state'
-  },
   'postcode': {
     default: 'Enter a valid field',
     notEmpty: 'Enter a post/zip code',
-    checkAUSPostcode: `The post/zip code doesn’t look correct, try again`
+    checkAUSPostcode: 'The post/zip code doesn’t look correct, try again'
   },
    'postcodeMessage': {
     default: 'There is an error in the form',
@@ -205,10 +153,10 @@ messages = {
 An object containing the error message for each field. The key of the object is the name of the field with the word 'Error' appended to the end. The property value is the error message.
 
 ### formErrors [object]
-An object containing the error message for each form validation. The key is the name of the form validation that are set in the rules. If no name is set then the key is the name of the affected input fields with the 'Error' appended to it. The property value is the error message.
+An object containing the error message for each form validation as well as some from field validations. The key is the name of the form validation that are set in the rules. If no name is set then the key is the name of the affected input fields with the 'Error' appended to it. The property value is the error message.
 
 ### formMessage [Array]
-An array that contains the form error messages. It is similar to the formError prop but without the property keys. This prop is useful if you want to loop through the messages and present them as a list. The order of the message follows the order of the form. If external server errors are passed in, these errors are appended to this array. Refer to [input props](#InputProps) to see how to pass in server errors.
+An array that contains the error messages from all validation rules . It is similar to the formError prop but without the property keys. This prop is useful if you want to loop through the messages and present them as a list. The order of the message follows the order of the form. If external server errors are passed in, these errors are appended to this array. Refer to [input props](#InputProps) to see how to pass in server errors.
 
 ### isFieldError [boolean]
 Whether there are any field errors.
@@ -295,7 +243,8 @@ Is used to set the validation rules at runtime. See [validation rules](#validati
 
 **rules [Array]:** An input's onclick Event object.  
 
-
+## <a id="test"></a>Unit Testing
+`npm run test`
 ## <a id="notes"></a>Notes
 1. This library is a work in progress, so if you find any bugs or have suggestion for improvements please let us know.
 2. To come: Documents for setting up dynamic validations and unit testing.

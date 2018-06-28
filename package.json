@@ -1,7 +1,7 @@
 {
-  "name": "create-react-library",
+  "name": "react-conditional-validations",
   "version": "1.1.0",
-  "description": "React NPM library starter kit based on Facebook's create react app",
+  "description": "A react HOC for conditional form validation",
   "main": "build/index.js",
   "scripts": {
     "start": "node scripts/start.js",
@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DimitriMikadze/create-react-library.git"
+    "url": "git+https://github.com/simonlau892/react-conditional-form-validations"
   },
-  "author": "Dimitri Mikadze <dimitrimikadze@gmail.com>",
+  "author": "Simon Lau <simonlau892@gmail.com>",
   "bugs": {
-    "url": "https://github.com/DimitriMikadze/create-react-library/issues"
+    "url": "https://github.com/simonlau892/react-conditional-form-validations/issues"
   },
-  "homepage": "https://github.com/DimitriMikadze/create-react-library#readme",
+  "homepage": "https://github.com/simonlau892/react-conditional-form-validations/blob/master/README.md",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {

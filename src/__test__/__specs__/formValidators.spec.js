@@ -10,13 +10,6 @@ const {
   checkAUSPostcode,
   minNotEmpty } = formValidators
 
-  // const {
-  //   sameValidity,
-  //   sameValue,
-  //   notEmpty,
-  //   checkAUSPostcode,
-  //   minNotEmpty } = errorMsgFunctions
-
   const errorMsgFunction = () => {}
 
 describe('The form validator`s', () => {
