@@ -104,8 +104,8 @@ A form rule has the following structure:
 **fields [array]:** An array of input field names (name attribute)  that are part of the form validation.  
 **runConditions [array]** *optional* **:** An array of objects, with each object representing a condition that needs to be met before the validation is executed. Each condition consists of an `attr` property. The `attr` property is an object that details the attributes values of one input element. Attribute tags that are currently supported are `name`, `value`, `id`, `checked` and `type`. More attributes can be added on request. An attribute value can either be a single value or an array of values.
 In addition to the attributes property, there is an option to add a `runPolarity` object for each condition. `runPolarity` is an object that can reverse the polarity of the check for each attribute value. See [Demo](#demo).
-If runConditions is omitted, then the validation rule will run every time.
-**formMessage[string]** *optional* **:** Is an identifier to set a custom form message. This identifier is used in the message object. If this is omitted then the form message is the list of errors messages for each input field that are affected by this validation rule. If formMessage is set to `false` then no form message will be displayed for this validation rule.
+If runConditions is omitted, then the validation rule will run every time.  
+**formMessage[string]** *optional* **:** Is an identifier to set a custom form message. This identifier is used in the message object. If this is omitted then the form message is the list of errors messages for each input field that are affected by this validation rule. If formMessage is set to `false` then no form message will be displayed for this validation rule.  
 **fieldMessage[string]** *optional* **:** If fieldMessage is set to `false` then no field message will be displayed for each input for this validation rule.
 
 Example:  
