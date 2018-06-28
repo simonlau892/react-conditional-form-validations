@@ -1,6 +1,6 @@
 {
   "name": "react-conditional-validations",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A react HOC for conditional form validation",
   "main": "build/index.js",
   "scripts": {
