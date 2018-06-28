@@ -8,18 +8,19 @@ class AddressForm extends Component {
     this.state = {
       country: '',
       address1: '',
-      address2: '',
+      state: '',
       email:'',
       city: '',
       postcode: ''
     }
   }
 
-  static propTypes = {
+  onFormSubmit= (other) => {
+    console.log('form has been submitted with no validation errors')
   }
 
-  onFormSubmit= (other) => {
-    // this.props.dispatch(actions.cd.postCDRequest())
+  onSubmitError= (other) => {
+    console.log('submit button has been clicked but there are validation errors')
   }
 
   onInputBlur = (event, name, isFieldError, other) => {
@@ -39,6 +40,7 @@ class AddressForm extends Component {
       onBlur: this.onInputBlur,
       onChange: this.onInputChange,
       onSubmit: this.onFormSubmit,
+      onSubmitError: this.onSubmitError
     }
 
     return (

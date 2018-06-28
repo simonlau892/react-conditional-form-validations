@@ -1,11 +1,19 @@
 
+.container {
+  margin: 30px;
+  width: 500px;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
 .form {
-  margin: 30px
+  width: 420px;
+  padding: 15px;
+  border: 1px solid black;
 }
 
 .formRow {
   margin: 2px 15px 30px 0px;
-  width: 420px;
 }
 
 .mainMessage {
