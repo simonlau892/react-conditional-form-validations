@@ -49,7 +49,7 @@ To see a demo either:
 
 - Clone the repo. Run `npm install`, and then `npm start`. The code is in `src/demo` and the demo can be viewed from `http://localhost:3000/`.
 - Alternatively click the following link for a sandbox version:
-https://codesandbox.io/embed/o7qn50x3zz
+https://codesandbox.io/embed/wk6wq3jox5
 
 ## <a id="validators"></a>Validators
 The following is a list of available field and form validators. More validators can be added on request.
