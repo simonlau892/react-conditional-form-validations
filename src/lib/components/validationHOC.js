@@ -11,7 +11,7 @@ export default function ValidateForm (messages, validation) {
       onSubmitError: PropTypes.func,
       serverError: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
     }
-    
+
     constructor (props) {
       super(props)
       this.state = {
@@ -243,6 +243,7 @@ export default function ValidateForm (messages, validation) {
       this.setState({
         fieldErrors: this._fieldErrors,
         formErrors: this._formErrors,
+        isSubmitClicked: false,
         isFieldError
       })
       if (this.props.onBlur) this.props.onBlur(event, name, this.state.isFieldError, other)

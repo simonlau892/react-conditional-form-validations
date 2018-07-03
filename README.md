@@ -2,9 +2,10 @@
 
 
 
+
 # React Conditional Form Validation
 
-This library is design to be used in applications where conditional form validation is required. In particular, validations can be executed based on the form values entered by the user. It is a Higher Order Component (HOC) thats wraps a React form component.
+This library is designed to be used in applications where conditional form validation is required. In particular, validations can be turned on or off based on the form values entered by the user. It is a Higher Order Component (HOC) thats wraps a React form component.
 
 **What can this library do**.
 * Supports basic input *field validation* as well as complex *form validations* involving multiple input fields.
@@ -31,9 +32,9 @@ This library is design to be used in applications where conditional form validat
 ##  <a id="works"></a>How it works
 This library support two types of validations, *field validation* and *form validation*.
 
-Field validation involves validating a single input field. This type of validation is executed when the  onBlur event occurs. All field validations are also re-run when the submit button is clicked.
+Field validation involves validating a single input field. This type of validation is executed when the  onBlur event occurs. All field validations are also re-run when the submit event is called.
 
-Form validation involves validating multiple input fields at a time. These validations can be programmed to run according to the current input values of the form. This type of validation is executed when the submit button is clicked.
+Form validation involves validating multiple input fields at a time. These validations can be programmed to run according to the current values of the form. This type of validation is executed when the submit event is called.
 
 The errors from both form and field validations can be cleared when the onChange event is activated.
 
@@ -103,10 +104,10 @@ A form rule has the following structure:
 **rule [function]:**  The name of the form validator function.  
 **fields [array]:** An array of input field names (name attribute)  that are part of the form validation.  
 **runConditions [array]** *optional* **:** An array of objects, with each object representing a condition that needs to be met before the validation is executed. Each condition consists of an `attr` property. The `attr` property is an object that details the attributes values of one input element. Attribute tags that are currently supported are `name`, `value`, `id`, `checked` and `type`. More attributes can be added on request. An attribute value can either be a single value or an array of values.
-In addition to the attributes property, there is an option to add a `runPolarity` object for each condition. `runPolarity` is an object that can reverse the polarity of the check for each attribute value. See [Demo](#demo).
+In addition to the attributes property, there is an option to add a `runPolarity` object for each condition. `runPolarity` is an object that can reverse the polarity of the check for each attribute value. To reverse the polarity so the check is **not** equal to the given value set `runPolarity` to `-1`. See [Demo](#demo).
 If runConditions is omitted, then the validation rule will run every time.  
 **formMessage[string]** *optional* **:** Is an identifier to set a custom form message. This identifier is used in the message object. If this is omitted then the form message is the list of errors messages for each input field that are affected by this validation rule. If formMessage is set to `false` then no form message will be displayed for this validation rule.  
-**fieldMessage[string]** *optional* **:** If fieldMessage is set to `false` then no field message will be displayed for each input for this validation rule.
+**fieldMessage[string]** *optional* **:** If fieldMessage is set to `false` then no field message will be displayed for each input affected by this validation rule.
 
 Example:  
 ~~~~
