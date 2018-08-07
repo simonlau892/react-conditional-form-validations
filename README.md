@@ -250,4 +250,6 @@ Is used to set the validation rules at runtime. See [validation rules](#validati
 `npm run test`
 ## <a id="notes"></a>Notes
 1. This library is a work in progress, so if you find any bugs or have suggestion for improvements please let us know.
-2. To come: Documentation for setting up dynamic validations.
+2. To come:
+    * Documentation for setting up dynamic validations.
+    * Ability to add validators dynamically.
